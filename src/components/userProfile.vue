@@ -9,26 +9,8 @@
         <strong>followers </strong>{{ followers }}
         <button @click="followUser">Follow</button>
       </div>
-      <form class="user-profile__create-twoot" @submit.prevent="createNewTwoot">
-        <label for="newTwoot">
-          <strong>New Twoot</strong>
-        </label>
-        <textarea id="newTwoot" rows="4" v-model="newTwootContent"></textarea>
-
-        <div class="user-profile__select">
-          <select v-model="selectedTwootType">
-            <option
-              :value="option.value"
-              v-for="(option, index) in twootsTypes"
-              :key="index"
-            >
-              {{ option.name }}
-            </option>
-          </select>
-        </div>
-
-        <button>Twoot!</button>
-      </form>
+      <!-- no need to pass params here from emmiting an event from child -->
+      <CreateTwoot @add-twoot="addtwoot" />
     </div>
     <div class="user-profile__twoots-wrapper">
       <Twootitem
@@ -44,21 +26,17 @@
 
 <script>
 import Twootitem from "../components/Twootitem";
+import CreateTwoot from "../components/CreateTwoot";
 
 export default {
   name: "UserProfile",
   components: {
-    Twootitem
+    Twootitem,
+    CreateTwoot
   },
   data() {
     return {
-      newTwootContent: "",
-      selectedTwootType: "instant",
       followers: 0,
-      twootsTypes: [
-        { value: "draft", name: "Draft Twoot" },
-        { value: "instant", name: "Instant Twoot" }
-      ],
       users: {
         id: 1,
         firstName: "Arham",
@@ -92,15 +70,12 @@ export default {
     favouriteToggle(id) {
       console.log(id);
     },
-    createNewTwoot() {
-      if (this.newTwootContent != "" && this.selectedTwootType != "draft") {
-        console.log(this.newTwootContent + this.selectedTwootType);
-        this.users.twoots.unshift({
-          id: this.users.lenght,
-          content: this.newTwootContent
-        });
-        this.newTwootContent = "";
-      }
+
+    addtwoot(e) {
+      this.users.twoots.unshift({
+        id: this.users.twoots.lenght,
+        content: e
+      });
     }
   },
   mounted() {
