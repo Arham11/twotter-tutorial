@@ -18,10 +18,14 @@ export default {
       required: true
     }
   },
-  methods: {
-    favouriteTwoot(id) {
-      this.$emit("favourite", id);
+  setup(props, context) {
+    function favouriteTwoot(id) {
+      context.emit("favourite", id);
     }
+
+    return {
+      favouriteTwoot
+    };
   }
 };
 </script>

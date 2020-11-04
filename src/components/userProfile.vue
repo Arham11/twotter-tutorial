@@ -1,8 +1,8 @@
 <template>
   <div class="user-profile">
     <div class="user-profile__panel">
-      <h2 class="user-profile__username">@ {{ users.userName }}</h2>
-      <div class="user-profile__admin" v-if="users.isAdmin">
+      <h2 class="user-profile__username">@ {{ state.users.userName }}</h2>
+      <div class="user-profile__admin" v-if="state.users.isAdmin">
         Admin
       </div>
       <div class="create-twoot-panel">
@@ -14,10 +14,10 @@
     </div>
     <div class="user-profile__twoots-wrapper">
       <Twootitem
-        v-for="twoot in users.twoots"
+        v-for="twoot in state.users.twoots"
         :key="twoot.id"
         :twoot="twoot"
-        :username="users.userName"
+        :username="state.users.userName"
         @favourite="favouriteToggle"
       />
     </div>
@@ -27,6 +27,7 @@
 <script>
 import Twootitem from "../components/Twootitem";
 import CreateTwoot from "../components/CreateTwoot";
+import { reactive, onMounted } from "vue";
 
 export default {
   name: "UserProfile",
@@ -34,8 +35,8 @@ export default {
     Twootitem,
     CreateTwoot
   },
-  data() {
-    return {
+  setup() {
+    const state = reactive({
       followers: 0,
       users: {
         id: 1,
@@ -49,6 +50,29 @@ export default {
           { id: 1, content: "Hi this is Arham Tweeting 2" }
         ]
       }
+    });
+    onMounted(() => {
+      state.followers++;
+    });
+    function followUser() {
+      state.followers++;
+    }
+    function favouriteToggle(id) {
+      console.log(id);
+    }
+
+    function addtwoot(e) {
+      state.users.twoots.unshift({
+        id: state.users.twoots.lenght,
+        content: e
+      });
+    }
+
+    return {
+      state,
+      followUser,
+      favouriteToggle,
+      addtwoot
     };
   },
   watch: {
@@ -57,30 +81,10 @@ export default {
         console.log(`you have gained a new ${this.users.userName}`);
       }
     }
-  },
-  computed: {
-    fullName() {
-      return `${this.users.firstName + this.users.lastName}`;
-    }
-  },
-  methods: {
-    followUser() {
-      this.followers++;
-    },
-    favouriteToggle(id) {
-      console.log(id);
-    },
-
-    addtwoot(e) {
-      this.users.twoots.unshift({
-        id: this.users.twoots.lenght,
-        content: e
-      });
-    }
-  },
-  mounted() {
-    this.followers++;
   }
+  // mounted() {
+  //   this.followers++;
+  // }
 };
 </script>
 

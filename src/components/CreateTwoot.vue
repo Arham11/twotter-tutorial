@@ -3,19 +3,14 @@
     <label for="newTwoot">
       <strong>New Twoot</strong>
     </label>
-    <div>hi {{ textCharcount }}</div>
-    <textarea
-      id="newTwoot"
-      rows="4"
-      v-model="newTwootContent"
-      @keyup="textCount"
-    ></textarea>
+    <div>({{ newTwootCharCout }}/180)</div>
+    <textarea id="newTwoot" rows="4" v-model="state.newTwootContent"></textarea>
 
     <div class="user-profile__select">
-      <select v-model="selectedTwootType">
+      <select v-model="state.selectedTwootType">
         <option
           :value="option.value"
-          v-for="(option, index) in twootsTypes"
+          v-for="(option, index) in state.twootsTypes"
           :key="index"
         >
           {{ option.name }}
@@ -28,10 +23,14 @@
 </template>
 
 <script lang="ts">
+import { reactive, computed } from "vue";
 export default {
   name: "Createtwoot",
-  data() {
-    return {
+
+  //setup has two params by default the first params is props
+  //the second params is used to for emitting the emit event of specific component
+  setup(props, context) {
+    const state = reactive({
       newTwootContent: "",
       textCharcount: "",
       selectedTwootType: "instant",
@@ -39,25 +38,21 @@ export default {
         { value: "draft", name: "Draft Twoot" },
         { value: "instant", name: "Instant Twoot" }
       ]
-    };
-  },
-  methods: {
-    createNewTwoot() {
-      if (this.newTwootContent != "" && this.selectedTwootType != "draft") {
-        console.log(this.newTwootContent + this.selectedTwootType);
-
-        this.$emit("add-twoot", this.newTwootContent);
-
-        // this.users.twoots.unshift({
-        //   id: this.users.lenght,
-        //   content: this.newTwootContent
-        // });
-        this.newTwootContent = "";
+    });
+    const newTwootCharCout = computed(() => state.newTwootContent.length);
+    function createNewTwoot() {
+      if (state.newTwootContent != "" && state.selectedTwootType != "draft") {
+        console.log(state.newTwootContent + state.selectedTwootType);
+        context.emit("add-twoot", state.newTwootContent);
+        state.newTwootContent = "";
       }
-    },
-    textCount() {
-      return (this.textCharcount = this.newTwootContent.lenght);
     }
+
+    return {
+      state,
+      newTwootCharCout,
+      createNewTwoot
+    };
   }
 };
 </script>
